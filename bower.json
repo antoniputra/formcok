@@ -1,0 +1,32 @@
+{
+  "name": "formcok",
+  "version": "0.0.1",
+  "authors": [
+    "antoniputra <akiddcode@gmail.com>"
+  ],
+  "description": "make a form dynamically",
+  "main": [
+    "./js/formcok.js",
+  ],
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "make",
+    "form",
+    "dynamically",
+    "multiple"
+  ],
+  "license": "MIT",
+  "homepage": "http://github.com/antoniputra/formcok",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": ">= 1.9.0"
+  }
+}
