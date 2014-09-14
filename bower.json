@@ -6,7 +6,7 @@
   ],
   "description": "make a form dynamically",
   "main": [
-    "./js/formcok.js",
+    "./js/formcok.js"
   ],
   "moduleType": [
     "globals"
