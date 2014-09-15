@@ -1,15 +1,18 @@
 (function ($) {
 
     var TEMPLATE    = 
-        '<div class="col-sm-12"> \n' +
-        '   <div class="form-group">\n' +
-        '      <label">\n' +
-        '          {labelResource} \n' +
-        '       </label> \n' +
-        '       {formResource} \n' +
-        '   </div> \n' +
+        '<p>\n' +
+        '   <small>\n' +
+        '       {labelResource} \n' +
+        '   </small> \n' +
+        '   {formResource} \n' +
+        '</p>',
+
+        CONTAINER   =
+        '<div class="well">  \n' +
+        '   {template} \n' +
         '</div>',
-        
+
         isEmpty = function (value, trim) {
             return value === null || value === undefined || value == []
                 || value === '' || trim && $.trim(value) === '';
@@ -40,6 +43,11 @@
             }
             return (is_stringify) ? JSON.stringify(obj) : obj ;
         },
+        appendFieldName = function(element, fieldName)
+        {
+            console.log(element, fieldName);
+            // comoing soon...
+        },
         exception = function(message)
         {
             $.error('Formcok Exception : '+ message);
@@ -49,7 +57,10 @@
         this.$element   = $(element);
         this.init(options);
         this.render();
-        this.listen();
+
+        if (options.isSerializeResult) {
+            this.listen();            
+        };
     };
 
     FormCok.prototype = {
@@ -57,13 +68,13 @@
         init: function (options) {
             this.options            = options;
             this.template           = options.template;
-            this.currentValue       = ( isJsonString(this.$element.val()) ) ? $.parseJSON(this.$element.val()) : false ;
-            this.fields             = this.getFields();
-
-            if (isEmpty(this.$element.attr('id'))) {
+            this.container          = options.container;
+            if ( isEmpty(this.$element.attr('id')) ) {
                 this.$element.attr('id', uniqId());
             }
             this.classEvent         = this.$element.attr('name') +'_items_'+ uniqId();
+            this.currentValue       = ( isJsonString(this.$element.val()) ) ? $.parseJSON(this.$element.val()) : false ;
+            this.fields             = this.getFields();
         },
         getFields: function()
         {
@@ -72,7 +83,7 @@
                 return this.options.fields;
             } else if( isJsonString(this.$element.attr('data-fields')) ) {
                 return $.parseJSON( this.$element.attr('data-fields') );
-            }            
+            }
         },
         getTotalFields: function()
         {
@@ -95,10 +106,16 @@
 
                 switch (fieldType) {
                     case 'text':
-                        form    = '<input type="text" class="form-control '+this.classEvent+'" name="'+ fieldName +'" value="'+ value +'" />';
+                        form = '<input type="text" class="form-control '+this.classEvent+'" item-name="'+fieldName+'" value="'+ value +'" />';
                     break;
                     case 'textarea':
-                        form    = '<textarea class="form-control '+this.classEvent+'" name="'+ fieldName +'" rows="4" >'+ value +'</textarea>';
+                        form = '<textarea class="form-control '+this.classEvent+'" item-name="'+fieldName+'" rows="4" >'+ value +'</textarea>';
+                    break;
+                    case 'dropdown':
+                        form = '';
+                    break;
+                    case 'radio':
+                        form = '';
                     break;
                     default:
                         exception('Field type of '+ label +' "'+ fieldType +'" not defined');
@@ -107,6 +124,10 @@
                 }
 
                 if (form !== false) {
+                    if (this.options.isSerializeResult !== false) {
+                        // appendFieldName(form,  fieldName);
+                        // add fieldname into element.
+                    };
                     result.push({"name":fieldName, "label":label, "form":form});
                 };
             }
@@ -124,8 +145,9 @@
                     .replace('{labelResource}', generatedFields[key].label);
             }
 
+            result = this.container.replace('{template}', result);
             this.$element.before(result);
-            this.$element.css({'visibility':'', 'position':''});
+            this.$element.css({'display':''});
             return result;
         },
         listen: function()
@@ -137,7 +159,7 @@
             {
                 var itemName    = $(itemClass).map(function(i,v)
                 {
-                    return $(v).attr('name');
+                    return $(v).attr('item-name');
                 }).get(),
                 itemValue   = $(itemClass).map(function(i,v)
                 {
@@ -157,16 +179,21 @@
                 options = typeof option === 'object' && option;
                 options_merged  = $.extend( {}, $.fn.formcok.defaults, $(this).data(), options );
 
-            $this.data(
+            /*$this.data(
                 'formcok', ( data = new FormCok(this, options_merged) )
-            );
+            );*/
+
+            new FormCok(this, options_merged);
         });
 
     };
 
     $.fn.formcok.defaults = {
         template: TEMPLATE,
-        fields: {"title":"text"}
+        container: CONTAINER,
+        fields: {},
+        isSerializeResult: true,
+        isMultiple: false
     };
 
 })(window.jQuery);
