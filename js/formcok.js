@@ -3,12 +3,10 @@
     var TEMPLATE    = 
         '<div class="col-sm-12"> \n' +
         '   <div class="form-group">\n' +
-        '      <label class="col-sm-2 control-label">\n' +
+        '      <label">\n' +
         '          {labelResource} \n' +
         '       </label> \n' +
-        '      <div class="col-sm-10"> \n' +
-        '          {formResource} \n' +
-        '      </div> \n' +
+        '       {formResource} \n' +
         '   </div> \n' +
         '</div>',
         
@@ -46,6 +44,7 @@
     var FormCok = function (element, options) {
         this.$element   = $(element);
         this.init(options);
+        this.render();
         this.listen();
     };
 
@@ -61,23 +60,15 @@
                 this.$element.attr('id', uniqId());
             }
             this.classEvent         = this.$element.attr('name') +'_items_'+ uniqId();
-            this.render();
         },
         getFields: function()
         {
-            try {
-                if( typeof this.options.fields === 'undefined' )
-                {
-                    console.log(this.options.fileds);
-                    return this.options.fields;
-                } else if( isJsonString(this.$element.attr('data-fields')) ) {
-                    return $.parseJSON( this.$element.attr('data-fields') );
-                }
-            } catch(e) {
-                console.log('cok');
-                return 'error';
-            }
-            
+            if( typeof this.options.fields !== 'undefined' )
+            {
+                return this.options.fields;
+            } else if( isJsonString(this.$element.attr('data-fields')) ) {
+                return $.parseJSON( this.$element.attr('data-fields') );
+            }            
         },
         getTotalFields: function()
         {
@@ -106,10 +97,13 @@
                         form    = '<textarea class="form-control '+this.classEvent+'" name="'+ fieldName +'" rows="4" >'+ value +'</textarea>';
                     break;
                     default:
-                        form    = 'undefined';
+                        form    = false;
                     break;
                 }
-                result.push({"name":fieldName, "label":label, "form":form});
+
+                if (form !== false) {
+                    result.push({"name":fieldName, "label":label, "form":form});
+                };
             }
             return result;
         },
@@ -126,7 +120,7 @@
             }
 
             this.$element.before(result);
-            this.$element.css({'visibility':'hidden', 'position':'absolute'});
+            this.$element.css({'visibility':'', 'position':''});
             return result;
         },
         listen: function()
@@ -151,21 +145,20 @@
     };
 
     $.fn.formcok = function (option) {
-        var args = Array.apply(null, arguments);
-        args.shift();
+
         return this.each(function () {
-            var $this = $(this),
-                data = $this.data('formcok'),
+            var $this   = $(this),
+                data    = $this.data('formcok'),
                 options = typeof option === 'object' && option;
+                options_merged  = $.extend( {}, $.fn.formcok.defaults, $(this).data(), options );
 
-            if (!data) {
-                $this.data('formcok', (data = new formcok(this, $.extend({}, $.fn.formcok.defaults, options, $(this).data()))));
-            }
+            console.log(options_merged);
 
-            if (typeof option === 'string') {
-                data[option].apply(data, args);
-            }
+            $this.data(
+                'formcok', (data = new FormCok(this, options_merged ))
+            );
         });
+
     };
 
     $.fn.formcok.defaults = {
