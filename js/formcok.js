@@ -39,6 +39,10 @@
                 obj[name[i]] = value[i];
             }
             return (is_stringify) ? JSON.stringify(obj) : obj ;
+        },
+        exception = function(message)
+        {
+            $.error('Formcok Exception : '+ message);
         }
 
     var FormCok = function (element, options) {
@@ -97,6 +101,7 @@
                         form    = '<textarea class="form-control '+this.classEvent+'" name="'+ fieldName +'" rows="4" >'+ value +'</textarea>';
                     break;
                     default:
+                        exception('Field type of '+ label +' "'+ fieldType +'" not defined');
                         form    = false;
                     break;
                 }
@@ -128,7 +133,7 @@
             var targetEl    = this.$element,
                 itemClass   = '.'+ this.classEvent;
 
-            $('.'+ this.classEvent).keyup(function()
+            $(itemClass).keyup(function()
             {
                 var itemName    = $(itemClass).map(function(i,v)
                 {
@@ -152,10 +157,8 @@
                 options = typeof option === 'object' && option;
                 options_merged  = $.extend( {}, $.fn.formcok.defaults, $(this).data(), options );
 
-            console.log(options_merged);
-
             $this.data(
-                'formcok', (data = new FormCok(this, options_merged ))
+                'formcok', ( data = new FormCok(this, options_merged) )
             );
         });
 
