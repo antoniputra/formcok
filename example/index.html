@@ -18,14 +18,29 @@
 				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 			</small></p>
 			<hr />
-			<form class="form-horizontal">
+			<form class="form-horizontal" method="POST" action="result.php">
+				<div class="form-group">
+					<label class="control-label col-md-2">
+						Web Owner
+					</label>
+					<div class="col-md-10">
+						<textarea id="web_owner" name="web_owner" class="form-control" data-fields='{"name":"text","email":"text","description":"textarea"}'>{"name":"antoni","email":"akiddcode@gmail.com","description":"Web Developer from Surabaya"}</textarea>
+					</div>
+				</div>
 				<div class="form-group">
 					<label class="control-label col-md-2">
 						Web Contact
 					</label>
 					<div class="col-md-10">
-						<textarea id="web_contact" class="form-control" data-fields='{"name":"text", "email":"text"}'></textarea>
+						<textarea id="web_contact" name="web_contact" class="form-control" data-fields='{"name":"text", "phone": "text"}'>{"name":"Customer Service", "phone":"085649787899"}</textarea>
 					</div>
+				</div>
+
+				<hr>
+				<div class="form-group text-center">
+					<button type="submit" class="btn btn-primary btn-lg">
+						Submit &raquo;
+					</button>					
 				</div>
 			</form>
 		</div>
@@ -35,8 +50,11 @@
 	<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="../js/formcok.js" type="text/javascript"></script>
 	<script type="text/javascript">
+		$("#web_owner").formcok({
+			isSerializeResult: true
+		});
 		$("#web_contact").formcok({
-			fields: {"name":"text", "email":"text", "description":"textareas"}
+			isMultiple: true
 		});
 	</script>
 </body>
